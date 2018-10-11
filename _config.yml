@@ -1,2 +1,5 @@
 theme: jekyll-theme-cayman
 title: Hands-on Model Calibration in R
+description: A guided tutorial
+author:
+  name: Eva Enns, PhD and Fernando Alarid-Escudero

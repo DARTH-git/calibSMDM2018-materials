@@ -447,11 +447,11 @@ plotrix<span class="op">::</span><span class="kw">plotCI</span>(<span class="dt"
 <div id="other-likelihoods" class="section level2">
 <h2><span class="header-section-number">4.3</span> Other likelihoods</h2>
 <p>We used a normal likelihood as a goodness-of-fit measure above, but there are many other options. For example, we could use a weighted sum of squared errors.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gof_wsse &lt;-<span class="st"> </span><span class="cf">function</span>(model_output, target_mean, target_se){
-    w =<span class="st"> </span><span class="dv">1</span><span class="op">/</span>(target_se<span class="op">^</span><span class="dv">2</span>)
-    gof &lt;-<span class="st">  </span>(<span class="op">-</span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(w<span class="op">*</span>(model_output <span class="op">-</span><span class="st"> </span>target_mean)<span class="op">^</span><span class="dv">2</span>) 
-    <span class="kw">return</span>(gof)
-}</code></pre></div>
+<pre><code>gof_wsse &lt;- function(model_output, target_mean, target_se){
+    w = 1/(target_se^2)
+    gof &lt;-  (-1) * sum(w*(model_output - target_mean)^2) 
+    return(gof)
+}</code></pre>
 </div>
 <div id="multiple-targets" class="section level2">
 <h2><span class="header-section-number">4.4</span> Multiple Targets</h2>
@@ -485,6 +485,10 @@ v.GOF.overall &lt;- c(m.GOF%*%v.weights)
 # Store in GOF matrix with column name &quot;Overall&quot;
 m.GOF &lt;- cbind(m.GOF,Overall_fit=v.GOF.overall)</code></pre>
 </div>
+</div>
+<div id="return-to-main-page" class="section level1">
+<h1><span class="header-section-number">5</span> Return to Main Page</h1>
+<p><a href="https://caleb-easterly.github.io/calibSMDM2018-materials/">Back to main page</a></p>
 </div>
 
 

@@ -12,10 +12,6 @@ output:
         highlight: tango
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE)
-```
-
 
 
 The "Cancer Relative Survival Model" represents transitions between three states: No Evidence of Disease (NED), cAncer metastasis (Mets), and Cancer Death.
@@ -274,7 +270,7 @@ legend("topright", legend = c("Targets", "Outputs"),
 
 We used a normal likelihood as a goodness-of-fit measure above, but there are many other options. For example, we could use a weighted sum of squared errors.
 
-```{r}
+```
 gof_wsse <- function(model_output, target_mean, target_se){
     w = 1/(target_se^2)
     gof <-  (-1) * sum(w*(model_output - target_mean)^2) 
@@ -321,3 +317,7 @@ v.GOF.overall <- c(m.GOF%*%v.weights)
 # Store in GOF matrix with column name "Overall"
 m.GOF <- cbind(m.GOF,Overall_fit=v.GOF.overall)
 ```
+
+# Return to Main Page
+
+<a href="https://caleb-easterly.github.io/calibSMDM2018-materials/">Back to main page</a>
