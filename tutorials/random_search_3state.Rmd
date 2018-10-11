@@ -1,5 +1,5 @@
 ---
-title: "Random Search Calibration"
+title: "Random Search Calibration: A Cancer Example"
 author: "DARTH Workgroup"
 date: "October 9, 2018"
 output:
@@ -8,25 +8,32 @@ output:
         depth: 3
         number_sections: true
         theme: united
-        highlight: tango
         toc_float: true
+        highlight: tango
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 ```
 
-# Calibration specifications
 
-- Model: Cancer Relative Survival Model
-- Parameters to be calibrated: `p.Mets`, `p.DieMets`
-- Targets: Surv
-- Search Method: Random search, using Latin-Hypercube Sampling
-- Goodness-of-Fit measure: Sum of Log-likelihood
 
-# Targets
+The "Cancer Relative Survival Model" represents transitions between three states: No Evidence of Disease (NED), cAncer metastasis (Mets), and Cancer Death.
 
-## Load packages and function files
+<br>
+
+<figure>
+  <img src="../images/crs_state_diagram.jpeg" alt="drawing" width="500"/>
+  <figcaption>CRS State Diagram (Alarid-Escudero, F, et al. MDM 2018)</figcaption>
+</figure>
+
+<br>
+
+We need to calibrate the two transition probabilities in the figure above - `p.Mets`, `p.DieMets` - because these transition probabilities are unobservable (at least in this example).
+
+To calibrate `p.Mets` and `p.DieMets`, we will fit the model to observed survival data. To do this, we'll sample the two parameters randomly, and then measure how well the model-predicted survival matches the observed survival.
+
+We'll use the following packages:
 
 ```{r}
 # calibration functionality
@@ -37,9 +44,10 @@ library(plotrix)
 library(psych)
 ```
 
-## Load Target Data
 
-This (hypothetical) calibration target is the proportion of people that survive over time. 
+# Targets
+
+The hypothetical calibration target is the proportion of people that survive over time. 
 
 ```{r}
 load("data/CRSTargets.RData")
@@ -68,9 +76,8 @@ plotrix::plotCI(x = CRS.targets$Target2$Time, y = CRS.targets$Target2$value,
                 xlab = "Time", ylab = "Target 2")
 ```
 
-# Model
 
-## Load the model as a function
+# Model
 
 The inputs to the function are parameters to be estimated through calibration. The model outputs correspond to the target data.
 
@@ -115,9 +122,7 @@ legend("topright", legend = c("Targets", "Outputs"),
 
 That doesn't look right! We need to *calibrate* the unobservable parameters so that the results match the observed data.
 
-# Calibration
-
-## Specify Calibration Inputs
+# Specify Calibration Inputs
 
 For random search with latin hypercube sampling, we need to specify:
 
@@ -187,21 +192,7 @@ psych::pairs.panels(m.param.samp)
 ```
 
 
-```{r}
-# names and number of input parameters to be calibrated
-param.names = c("p.Mets","p.DieMets")
-n.param = length(param.names)
-
-# range on input search space
-lb <- c(p.Mets = 0.04, p.DieMets = 0.04) # lower bound
-ub <- c(p.Mets = 0.16, p.DieMets = 0.16) # upper bound
-
-# number of calibration targets
-target.names = c("Surv")
-n.target = length(target.names)
-```
-
-## Run the model
+# Run the Calibration
 
 We have `r n.samp` parameter sets, so we'll have `r n.samp` entries in the goodness-of-fit vector. We're currently using a single target, so we'll have one column.
 
@@ -214,12 +205,12 @@ Now, we run the model for each set of input values, and determine how well the m
 
 ## Goodness-of-fit
 
-In this case, the goodness of fit function is the likelihood of observing the model results, given the target data. We assume a normal likelihood for this example. In many cases, it's more numerically stable to use the log-likelihood `log = TRUE` and sum them together.
+In this case, the goodness of fit function is the likelihood of observing the target data, given the model results. We assume a normal likelihood for this example. In many cases, it's more numerically stable to use the log-likelihood `log = TRUE` and sum the individual likelihoods together.
 
 ```{r}
 gof_norm_loglike <- function(target_mean, target_sd, model_output){
-  sum(dnorm(x = model_output,
-            mean = target_mean,
+  sum(dnorm(x = target_mean,
+            mean = model_output,
             sd = target_sd,
             log = TRUE))
 }
@@ -318,8 +309,6 @@ for (j in 1:n.samp){
                               target_sd = CRS.targets$Target2$se)
 }
 ```
-
-###  Combine fits 
 
 Then, we would combine the GoFs into a single, multiplying by a `v.weights`, a vector of weights (here, equal weights).
 ```
