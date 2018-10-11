@@ -1,7 +1,7 @@
 ---
-title: "Random Search Calibration: A Cancer Example"
+title: "Random Search and Nelder-Mead Calibration"
 author: "DARTH Workgroup"
-date: "October 9, 2018"
+date: "October 14, 2018"
 output:
     html_document:
         toc: true
@@ -14,24 +14,25 @@ output:
 
 
 
-The "Cancer Relative Survival Model" represents transitions between three states: No Evidence of Disease (NED), cAncer metastasis (Mets), and Cancer Death.
+The "Cancer Relative Survival Model" represents transitions between three states: no evidence of disease (NED), cancer metastasis (Mets), and cancer death.
 
+<br>
 <br>
 
 <figure>
-  <img src="../images/crs_state_diagram.jpeg" alt="drawing" width="500"/>
-  <figcaption>CRS State Diagram (Alarid-Escudero, F, et al. MDM 2018)</figcaption>
+  <img src="../crs_state_diagram.jpeg" alt="drawing" width="500"/>
+  <figcaption>CRS State Diagram (Alarid-Escudero, et al. MDM 2018)</figcaption>
 </figure>
 
 <br>
-
+<br>
 We need to calibrate the two transition probabilities in the figure above - `p.Mets`, `p.DieMets` - because these transition probabilities are unobservable (at least in this example).
 
 To calibrate `p.Mets` and `p.DieMets`, we will fit the model to observed survival data. To do this, we'll sample the two parameters randomly, and then measure how well the model-predicted survival matches the observed survival.
 
 We'll use the following packages:
 
-```{r}
+```{r message=FALSE}
 # calibration functionality
 library(lhs)
 
@@ -46,7 +47,7 @@ library(psych)
 The hypothetical calibration target is the proportion of people that survive over time. 
 
 ```{r}
-load("data/CRSTargets.RData")
+load("CRSTargets.RData")
 ```
 
 
@@ -81,7 +82,7 @@ This creates the function `markov_crs()`. The function has one argument, `v.para
 
 
 ```{r}
-source("scripts/markov_crs.R") 
+source("markov_crs.R")
 ```
 
 
@@ -118,7 +119,7 @@ legend("topright", legend = c("Targets", "Outputs"),
 
 That doesn't look right! We need to *calibrate* the unobservable parameters so that the results match the observed data.
 
-# Specify Calibration Inputs
+# Random Search Calibration
 
 For random search with latin hypercube sampling, we need to specify:
 
@@ -137,7 +138,7 @@ Let's start with 1000 samples. We're calibrating 2 parameters, `p.Mets` and `p.D
 ```{r}
 param.names <- c("p.Mets","p.DieMets")
 n.param <- length(param.names)
-n.samp <- 1000
+rs.n.samp <- 1000
 ```
 
 The boundaries on the search space are as follows:
@@ -153,7 +154,7 @@ Now, we sample. Right away, we rename the columns of `m.lhs.unit` so we can keep
 
 ```{r}
 # Sample unit Latin Hypercube
-m.lhs.unit <- lhs::randomLHS(n.samp, n.param)
+m.lhs.unit <- lhs::randomLHS(rs.n.samp, n.param)
 colnames(m.lhs.unit) <- param.names
 head(m.lhs.unit)
 ```
@@ -171,10 +172,10 @@ We have to rescale to the ranges we specified. (Note: we can start with a LHS sa
 
 ```{r}
 # Rescale to min/max of each parameter
-m.param.samp <- matrix(nrow=n.samp,ncol=n.param)
-colnames(m.param.samp) <- param.names
+rs.param.samp <- matrix(nrow=rs.n.samp,ncol=n.param)
+colnames(rs.param.samp) <- param.names
 for (i in 1:n.param){
-  m.param.samp[,i] <- qunif(m.lhs.unit[,i],
+  rs.param.samp[,i] <- qunif(m.lhs.unit[,i],
                            min = lb[i],
                            max = ub[i])
 }
@@ -184,22 +185,20 @@ Now, the parameters are within the range we specified.
 
 ```{r}
 # view resulting parameter set samples
-psych::pairs.panels(m.param.samp)
+psych::pairs.panels(rs.param.samp)
 ```
 
 
-# Run the Calibration
+## Run the Calibration
 
-We have `r n.samp` parameter sets, so we'll have `r n.samp` entries in the goodness-of-fit vector. We're currently using a single target, so we'll have one column.
+We have `r rs.n.samp` parameter sets, so we'll have `r rs.n.samp` entries in the goodness-of-fit vector. We're currently using a single target, so we'll have one column (i.e., a vector).
 
 ```{r}
 # initialize goodness-of-fit vector
-m.GOF <- rep(0, n.samp)
+rs.GOF <- rep(0, rs.n.samp)
 ```
 
 Now, we run the model for each set of input values, and determine how well the model results fit the target data.
-
-## Goodness-of-fit
 
 In this case, the goodness of fit function is the likelihood of observing the target data, given the model results. We assume a normal likelihood for this example. In many cases, it's more numerically stable to use the log-likelihood `log = TRUE` and sum the individual likelihoods together.
 
@@ -215,16 +214,16 @@ gof_norm_loglike <- function(target_mean, target_sd, model_output){
 Loop through sampled sets of input values
 
 ```{r}
-for (j in 1:n.samp){
+for (j in 1:rs.n.samp){
   
   ###  Run model for a given parameter set  ###
-  model.res = markov_crs(v.params = m.param.samp[j, ])
+  model.res = markov_crs(v.params = rs.param.samp[j, ])
   
   ###  Calculate goodness-of-fit of model outputs to targets  ###
   # log likelihood of the model output given the targets
-  m.GOF[j] = gof_norm_loglike(model_output = model.res$Surv,
-                              target_mean = CRS.targets$Surv$value,
-                              target_sd = CRS.targets$Surv$se)
+  rs.GOF[j] = gof_norm_loglike(model_output = model.res$Surv,
+                               target_mean = CRS.targets$Surv$value,
+                               target_sd = CRS.targets$Surv$se)
 }
 ```
 
@@ -232,36 +231,33 @@ for (j in 1:n.samp){
 
 ```{r}
 # Arrange parameter sets in order of fit
-m.calib.res <- cbind(m.param.samp,m.GOF)
-m.calib.res <- m.calib.res[order(-m.calib.res[,"m.GOF"]),]
+rs.calib.res <- cbind(rs.param.samp, rs.GOF)
+rs.calib.res <- rs.calib.res[order(-rs.calib.res[,"rs.GOF"]),]
 
 # Examine the top 10 best-fitting sets
-m.calib.res[1:10,]
+rs.calib.res[1:10,]
 
 # Plot the top 100 (top 10%)
-plot(x = m.calib.res[1:100,1], y = m.calib.res[1:100,2],
+plot(x = rs.calib.res[1:100,1], y = rs.calib.res[1:100,2],
      xlim=c(lb[1],ub[1]),ylim=c(lb[2],ub[2]),
-     xlab = colnames(m.calib.res)[1],ylab = colnames(m.calib.res)[2])
+     xlab = colnames(rs.calib.res)[1],ylab = colnames(rs.calib.res)[2])
 ```
 
 How does the model look with the best-fitting set?
 
 ```{r}
-
-best_fit_params <- c(m.calib.res[1, c("p.Mets",  "p.DieMets")])
-
-best_fit_model <- markov_crs(best_fit_params)
+rs_best_fit_params <- c(rs.calib.res[1, c("p.Mets",  "p.DieMets")])
+rs_best_fit_model <- markov_crs(rs_best_fit_params)
 
 plotrix::plotCI(x = CRS.targets$Surv$Time, y = CRS.targets$Surv$value, 
                 ui = CRS.targets$Surv$ub,
                 li = CRS.targets$Surv$lb,
                 ylim = c(0, 1), 
                 xlab = "Time", ylab = "Pr Survive")
-
-points(x = names(best_fit_model$Surv), y = best_fit_model$Surv,
+points(x = names(rs_best_fit_model$Surv), y = rs_best_fit_model$Surv,
        col = "green",
        pch = 20)
-legend("topright", legend = c("Targets", "Outputs"),
+legend("topright", legend = c("Targets", "Random Search"),
        col = c("black", "green"),
        pch = c(1, 20))
 ```
@@ -287,37 +283,166 @@ If we had 2 targets, we would define a GOF *matrix* with two columns:
 
 ```
 # initialize goodness-of-fit matrix
-m.GOF <- matrix(0, nrow = n.samp, ncol = 2)
+rs.GOF <- matrix(0, nrow = n.samp, ncol = 2)
 
 for (j in 1:n.samp){
   
   ###  Run model for a given parameter set  ###
-  model.res = markov_crs(v.params = m.param.samp[j, ])
+  model.res = markov_crs(v.params = rs.params.samp[j, ])
   
   ###  Target 1  ###
-  m.GOF[j, 1] = gof_norm_loglike(model_output = model.res$Output1,
+  rs.GOF[j, 1] = gof_norm_loglike(model_output = model.res$Output1,
                               target_mean = CRS.targets$Target1$value,
                               target_sd = CRS.targets$Target1$se)
   
   ### Target 2 ###
-  m.GOF[j, 2] = gof_norm_loglike(model_output = model.res$Output2,
+  rs.GOF[j, 2] = gof_norm_loglike(model_output = model.res$Output2,
                               target_mean = CRS.targets$Target2$value,
                               target_sd = CRS.targets$Target2$se)
 }
 ```
 
 Then, we would combine the GoFs into a single, multiplying by a `v.weights`, a vector of weights (here, equal weights).
+
 ```
 # can give different targets different weights
 v.weights <- matrix(1, nrow = n.target, ncol = 1)
 
 # matrix multiplication to calculate weight sum of each GOF matrix row
-v.GOF.overall <- c(m.GOF%*%v.weights)
+rs.GOF.overall <- c(rs.GOF %*% v.weights)
 
 # Store in GOF matrix with column name "Overall"
-m.GOF <- cbind(m.GOF,Overall_fit=v.GOF.overall)
+rs.GOF <- cbind(rs.GOF, Overall_fit=rs.GOF.overall)
 ```
+
+# Nelder-Mead Calibration
+
+Main differences between Random Search and Nelder-Mead:
+
+1. Nelder-Mead is *directed*, which random search is *undirected*
+2. In Nelder-Mead, we sample several starting points to ensure that we find global optima, or at least all of the local optima.
+
+Let's do a Nelder-Mead calibration!
+
+## Sample starting values
+
+```{r}
+n.init <- 100
+nm.params.init <- matrix(nrow=n.init,ncol=n.param)
+set.seed(101)
+for (i in 1:n.param){
+  nm.params.init[,i] <- runif(n.init,min=lb[i],max=ub[i])
+}
+colnames(nm.params.init) <- param.names
+
+head(nm.params.init)
+```
+
+## Objective Function
+
+This function is what is optimized by the `optim()` function. As such, it must return a summary measure of goodness of fit - that is, a single number. If we were to use multiple targets, their combination would have to be calculated in this function.
+
+```{r}
+nm_objective = function(v.params){
+  ###   Run model for parametr set "v.params" ###
+  model.res = markov_crs(v.params)
+
+  # log likelihood  
+  v.GOF = gof_norm_loglike(target_mean = CRS.targets$Surv$value,
+                              model_output = model.res$Surv,
+                              target_sd = CRS.targets$Surv$se)
+  return(v.GOF)
+}
+```
+
+
+## Run the Calibration!
+
+For each starting point, we maximize the goodness of fit, then save the resulting parameter values:
+
+```{r}
+nm.calib.res <- matrix(nrow = n.init, ncol = n.param+1)
+colnames(nm.calib.res) <- c(param.names, "Overall_fit")
+for (j in 1:n.init){
+  
+  fit.nm <- optim(nm.params.init[j,], nm_objective, 
+                 control = list(fnscale = -1, # fnscale = -1 switches from minimization to maximization
+                                maxit = 1000), 
+                 hessian = T)
+  
+  nm.calib.res[j,] <- c(fit.nm$par,fit.nm$value)
+  
+}
+```
+
+## Results
+
+```{r}
+# Arrange parameter sets in order of fit
+nm.calib.res <- nm.calib.res[order(-nm.calib.res[,"Overall_fit"]),]
+
+# Examine the top 10 best-fitting sets
+nm.calib.res[1:10,]
+
+# Plot the top 10 (top 10%)
+plot(nm.calib.res[1:10,1],nm.calib.res[1:10,2],
+     xlim=c(lb[1],ub[1]),ylim=c(lb[2],ub[2]),
+     xlab = colnames(nm.calib.res)[1],ylab = colnames(nm.calib.res)[2])
+```
+
+What do you notice about these results?
+
+Let's see how the results look compared to the targets:
+
+```{r}
+nm_best_fit_params <- c(nm.calib.res[1, c("p.Mets",  "p.DieMets")])
+nm_best_fit_model <- markov_crs(nm_best_fit_params)
+
+plotrix::plotCI(x = CRS.targets$Surv$Time, y = CRS.targets$Surv$value, 
+                ui = CRS.targets$Surv$ub,
+                li = CRS.targets$Surv$lb,
+                ylim = c(0, 1), 
+                xlab = "Time", ylab = "Pr Survive")
+points(x = names(nm_best_fit_model$Surv), y = nm_best_fit_model$Surv,
+       col = "red",
+       pch = 4,
+       cex = 1.2)
+legend("topright", legend = c("Targets", "Nelder-Mead"),
+       col = c("black", "red"),
+       pch = c(1, 2, 4))
+```
+
+
+# Compare Calibration Results
+
+We can plot the calibration results on the same axes, to see if the results are similar or different.
+
+```{r}
+plotrix::plotCI(x = CRS.targets$Surv$Time, y = CRS.targets$Surv$value, 
+                ui = CRS.targets$Surv$ub,
+                li = CRS.targets$Surv$lb,
+                ylim = c(0, 1), 
+                xlab = "Time", ylab = "Pr Survive")
+points(x = names(rs_best_fit_model$Surv), y = rs_best_fit_model$Surv,
+       col = "green",
+       pch = 2,
+       cex = 1.2)
+points(x = names(nm_best_fit_model$Surv), y = nm_best_fit_model$Surv,
+       col = "red",
+       pch = 4,
+       cex = 1.2)
+
+legend("topright", legend = c("Targets", "Random Search", "Nelder-Mead"),
+       col = c("black", "green", "red"),
+       pch = c(1, 2, 4))
+```
+
 
 # Return to Main Page
 
 <a href="https://caleb-easterly.github.io/calibSMDM2018-materials/">Back to main page</a>
+
+# Appendix - Model Function
+
+```{r code=readLines('../markov_crs.R')}
+```

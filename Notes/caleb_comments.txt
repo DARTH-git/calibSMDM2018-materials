@@ -1,3 +1,0 @@
-- seed with zero in front is confusing (07 = 7)"
-- goodness of fit function?
-- nice when function name = script name
