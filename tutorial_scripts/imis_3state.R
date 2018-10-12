@@ -3,7 +3,6 @@
 library(lhs)
 library(IMIS)
 library(matrixStats) # package used for sumamry statistics
-library(modeest)     # package used to estimate mode
 
 # visualization
 library(plotrix)
@@ -159,35 +158,9 @@ v.calib.post.mean
 m.calib.post.95cr <- matrixStats::colQuantiles(m.calib.post, probs = c(0.025, 0.5, 0.975))
 m.calib.post.95cr
 
-# Compute posterior mode
-v.calib.post.mode <- apply(m.calib.post, 2, function(x) as.numeric(modeest::mlv(x)[1]))
-v.calib.post.mode
-
 # compute maximum a posteriori
 v.calib.like <- likelihood(m.calib.post)
 v.calib.post.map <- m.calib.post[which.max(v.calib.like), ]
-
-## ------------------------------------------------------------------------
-v.out.post.mode <- markov_crs(v.calib.post.mode)
-
-# TARGET 1: Survival ("Surv")
-plotrix::plotCI(x = CRS.targets$Surv$Time, y = CRS.targets$Surv$value, 
-                ui = CRS.targets$Surv$ub,
-                li = CRS.targets$Surv$lb,
-                ylim = c(0, 1), 
-                xlab = "Time", ylab = "Pr Survive")
-grid()
-for (i in 1:nrow(m.calib.post)){
-  mod_output <- markov_crs(m.calib.post[i, ])
-  lines(x = CRS.targets$Surv$Time, 
-        y = mod_output$Surv,
-        col = "darkorange",
-        lwd = 0.1)
-}
-lines(x = CRS.targets$Surv$Time, 
-       y = v.out.post.mode$Surv,
-      col = "dodgerblue",
-      lwd = 2)
 
 ## ------------------------------------------------------------------------
 v.out.post.map <- markov_crs(v.calib.post.map)

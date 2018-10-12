@@ -1,5 +1,6 @@
 
 library(rmarkdown)
+library(knitr)
 
 #####  random search and nelder mead #####
 
