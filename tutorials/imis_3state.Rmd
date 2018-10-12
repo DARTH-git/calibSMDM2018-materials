@@ -12,9 +12,9 @@ output:
         highlight: tango
 ---
 
-Incremental mixture importance sampling is a Bayesian method that allows us to account for non-identifiability and uncertainty in the calibrated values.
+Bayesian methods allow us to quantify the uncertainty in the calibrated parameters even in the presence of non-identifiability.
 
-Fernando - more?
+To conduct a Bayesian calibration of the three-satte model, we use the incremental mixture importance sampling (IMIS) algorithm. 
 
 # Setup
 
