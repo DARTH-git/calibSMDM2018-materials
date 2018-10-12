@@ -122,7 +122,7 @@ f_log_prior <- function(v.params){
 The result of this function is a single number - the log of the prior density at `v.params`
 
 ```{r}
-v.params.test <- c("p.Mets" = 0.1, "p.DieMets" = 0.2)
+v.params.test <- c("p.Mets" = 0.1, "p.DieMets" = 0.1)
 f_log_prior(v.params = v.params.test)
 ```
 
