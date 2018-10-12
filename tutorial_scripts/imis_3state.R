@@ -67,7 +67,7 @@ f_log_prior <- function(v.params){
 }
 
 ## ------------------------------------------------------------------------
-v.params.test <- c("p.Mets" = 0.1, "p.DieMets" = 0.2)
+v.params.test <- c("p.Mets" = 0.1, "p.DieMets" = 0.1)
 f_log_prior(v.params = v.params.test)
 
 ## ------------------------------------------------------------------------
@@ -165,7 +165,7 @@ v.calib.post.mode
 
 # compute maximum a posteriori
 v.calib.like <- likelihood(m.calib.post)
-map <- m.calib.post[which.max(v.calib.like), ]
+v.calib.post.map <- m.calib.post[which.max(v.calib.like), ]
 
 ## ------------------------------------------------------------------------
 v.out.post.mode <- markov_crs(v.calib.post.mode)
@@ -190,7 +190,7 @@ lines(x = CRS.targets$Surv$Time,
       lwd = 2)
 
 ## ------------------------------------------------------------------------
-v.out.post.map <- markov_crs(map)
+v.out.post.map <- markov_crs(v.calib.post.map)
 
 # TARGET 1: Survival ("Surv")
 plotrix::plotCI(x = CRS.targets$Surv$Time, y = CRS.targets$Surv$value, 

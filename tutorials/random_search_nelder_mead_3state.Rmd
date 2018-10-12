@@ -10,6 +10,8 @@ output:
         theme: united
         toc_float: true
         highlight: tango
+bibliography: Calibration-bib.bib
+link-citations: yes                
 ---
 
 
@@ -21,7 +23,7 @@ The "Cancer Relative Survival Model" represents transitions between three states
 
 <figure>
   <img src="../crs_state_diagram.jpeg" alt="drawing" width="500"/>
-  <figcaption>CRS State Diagram (Alarid-Escudero, et al. MDM 2018)</figcaption>
+  <figcaption>CRS State Diagram [@Alarid-Escudero2018a] </figcaption>
 </figure>
 
 <br>
@@ -446,3 +448,5 @@ legend("topright", legend = c("Targets", "Random Search", "Nelder-Mead"),
 
 ```{r code=readLines('../markov_crs.R')}
 ```
+
+# References

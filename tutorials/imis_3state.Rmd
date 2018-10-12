@@ -10,11 +10,15 @@ output:
         theme: united
         toc_float: true
         highlight: tango
+bibliography: Calibration-bib.bib
+link-citations: yes        
 ---
 
-Bayesian methods allow us to quantify the uncertainty in the calibrated parameters even in the presence of non-identifiability.
+Bayesian methods allow us to quantify the uncertainty in the calibrated parameters even in the presence of non-identifiability [@Alarid-Escudero2018a].
 
-To conduct a Bayesian calibration of the three-satte model, we use the incremental mixture importance sampling (IMIS) algorithm. 
+To conduct a Bayesian calibration of the three-satte model, we use the incremental mixture importance sampling (IMIS) algorithm [@Teele2006]. 
+
+The IMIS algorithm has been used to calibrate health policy models [@Raftery2010a, @Menzies2017]
 
 # Setup
 
@@ -247,7 +251,7 @@ v.calib.post.mode
 
 # compute maximum a posteriori
 v.calib.like <- likelihood(m.calib.post)
-map <- m.calib.post[which.max(v.calib.like), ]
+v.calib.post.map <- m.calib.post[which.max(v.calib.like), ]
 ```
 
 
@@ -280,7 +284,7 @@ lines(x = CRS.targets$Surv$Time,
 
 ### MAP
 ```{r}
-v.out.post.map <- markov_crs(map)
+v.out.post.map <- markov_crs(v.calib.post.map)
 
 # TARGET 1: Survival ("Surv")
 plotrix::plotCI(x = CRS.targets$Surv$Time, y = CRS.targets$Surv$value, 
@@ -306,3 +310,5 @@ lines(x = CRS.targets$Surv$Time,
 # Return to Main Page
 
 <a href="https://caleb-easterly.github.io/calibSMDM2018-materials/">Back to main page</a>
+
+# References
