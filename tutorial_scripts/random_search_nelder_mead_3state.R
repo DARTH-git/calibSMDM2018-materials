@@ -220,5 +220,5 @@ legend("topright", legend = c("Targets", "Random Search", "Nelder-Mead"),
        col = c("black", "green", "red"),
        pch = c(1, 2, 4))
 
-## ----code=readLines('../markov_crs.R')-----------------------------------
+## ----code=readLines('markov_crs.R')--------------------------------------
 

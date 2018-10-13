@@ -22,7 +22,7 @@ The "Cancer Relative Survival Model" represents transitions between three states
 <br>
 
 <figure>
-  <img src="../crs_state_diagram.jpeg" alt="drawing" width="500"/>
+  <img src="crs_state_diagram.jpeg" alt="drawing" width="500"/>
   <figcaption>CRS State Diagram [@Alarid-Escudero2018a] </figcaption>
 </figure>
 
@@ -446,7 +446,7 @@ legend("topright", legend = c("Targets", "Random Search", "Nelder-Mead"),
 
 # Appendix - Model Function
 
-```{r code=readLines('../markov_crs.R')}
+```{r code=readLines('markov_crs.R')}
 ```
 
 # References

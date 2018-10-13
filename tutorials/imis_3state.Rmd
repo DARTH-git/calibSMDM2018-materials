@@ -276,6 +276,60 @@ lines(x = CRS.targets$Surv$Time,
       lwd = 2)
 ```
 
+# Additional Targets
+
+As before, we can use more than one target in the calibration. Insteady of definining a likelihood vector, we would want to define a likelihood *matrix*. Then, we can sum the $i$th of the matrix to get a total likelihood for the the $i$th parameter set.
+
+
+```{r}
+n.target <- 2  # or any number of targets that you have
+
+# define log-likelihood function
+f_llik_2tar <- function(v.params){
+  # par_vector: a vector (or matrix) of model parameters 
+  if(is.null(dim(v.params))) { # If vector, change to matrix
+    v.params <- t(v.params) 
+  }
+  n.samp <- nrow(v.params)
+  v.llik <- matrix(0, nrow = n.samp, ncol = n.target) 
+  llik.overall <- numeric(n.samp)
+  for(j in 1:n.samp) { # j=1
+    jj <- tryCatch( { 
+      ###   Run model for parametr set "v.params" ###
+      model.res <- markov_crs(v.params[j, ])
+      
+      ###  Calculate log-likelihood of model outputs to targets  ###
+      # TARGET 1: Survival ("Surv")
+      # log likelihood  
+      v.llik[j, 1] <- sum(dnorm(x = CRS.targets$Surv$value,
+                                mean = model.res$Surv,
+                                sd = CRS.targets$Surv$se,
+                                log = T))
+      
+      # TARGET 2:
+      # log likelihood
+      v.llik[j, 2] <- sum(dnorm(x = CRS.targets$Target2$value,
+                             mean = model.res$Target2,
+                             sd = CRS.targets$Target2$se,
+                             log = T))
+      
+      # OVERALL 
+      llik.overall[j] <- sum(v.llik[j, ])
+    }, error = function(e) NA) 
+    if(is.na(jj)) { llik.overall <- -Inf }
+  } # End loop over sampled parameter sets
+  # return LLIK
+  return(llik.overall)
+}
+
+# define likelihood function
+likelihood <- function(v.params){ 
+  exp(f_llik_2tar(v.params)) 
+}
+```
+
+Then, the calibration would proceed as before.
+
 
 # Return to Main Page
 
