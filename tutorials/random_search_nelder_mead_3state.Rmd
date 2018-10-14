@@ -1,6 +1,9 @@
 ---
 title: "Random Search and Nelder-Mead Calibration"
-author: "DARTH Workgroup"
+author:
+- Eva Enns, PhD
+- Fernando Alarid-Escudero, PhD
+- Caleb Easterly
 date: "October 14, 2018"
 output:
     html_document:

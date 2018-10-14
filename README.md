@@ -1,4 +1,4 @@
-## Eva Enns, PhD, and Fernando Alarid-Escudero, PhD
+## Eva Enns, PhD, Fernando Alarid-Escudero, PhD, and Caleb Easterly
 ## Society for Medical Decision Making 40th Annual North American Meeting
 
 ### Tutorials
