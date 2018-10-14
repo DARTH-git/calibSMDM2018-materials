@@ -257,9 +257,9 @@ div.tocify {
 </div>
 
 
-<p>Bayesian methods allow us to quantify the uncertainty in the calibrated parameters even in the presence of non-identifiability <span class="citation">(Alarid-Escudero et al. <a href="#ref-Alarid-Escudero2018a">2018</a>)</span>.</p>
+<p>Bayesian methods allow us to quantify the uncertainty in the calibrated parameters even in the presence of non-identifiability <span class="citation">(F. Alarid-Escudero et al. <a href="#ref-Alarid-Escudero2018a">2018</a>)</span>.</p>
 <p>To conduct a Bayesian calibration of the three-state model, we use the incremental mixture importance sampling (IMIS) algorithm <span class="citation">(Teele, Raftery, and Mond <a href="#ref-Teele2006">2006</a>)</span>.</p>
-<p>The IMIS algorithm has been used to calibrate health policy models <span class="citation">(A. E. Raftery and Bao <a href="#ref-Raftery2010a">2010</a>, <span class="citation">Menzies et al. (<a href="#ref-Menzies2017">2017</a>)</span>)</span></p>
+<p>The IMIS algorithm has been used to calibrate health policy models <span class="citation">(A. E. Raftery and Bao <a href="#ref-Raftery2010a">2010</a>, <span class="citation">Menzies et al. (<a href="#ref-Menzies2017">2017</a>)</span>, <span class="citation">Easterly et al. (<a href="#ref-Easterly2018">2018</a>)</span>)</span></p>
 <div id="setup" class="section level1">
 <h1><span class="header-section-number">1</span> Setup</h1>
 <div id="packages" class="section level2">
@@ -419,7 +419,7 @@ fit.imis &lt;-<span class="st"> </span><span class="kw">IMIS</span>(<span class=
                  <span class="dt">B.re =</span> n.resamp, <span class="co"># the desired posterior sample size</span>
                  <span class="dt">number_k =</span> <span class="dv">10</span>, <span class="co"># the maximum number of iterations in IMIS.</span>
                  <span class="dt">D =</span> <span class="dv">0</span>)</code></pre></div>
-<pre><code>## [1] &quot;10000 likelihoods are evaluated in 0.04 minutes&quot;
+<pre><code>## [1] &quot;10000 likelihoods are evaluated in 0.05 minutes&quot;
 ## [1] &quot;Stage   MargLike   UniquePoint   MaxWeight   ESS&quot;
 ## [1]   1.000 151.197 238.293   0.012 153.201
 ## [1]   2.000 151.188 356.631   0.012 215.799
@@ -545,6 +545,9 @@ likelihood &lt;-<span class="st"> </span><span class="cf">function</span>(v.para
 <div id="refs" class="references">
 <div id="ref-Alarid-Escudero2018a">
 <p>Alarid-Escudero, Fernando, Richard F. MacLehose, Yadira Peralta, Karen M Kuntz, and Eva A Enns. 2018. “Nonidentifiability in Model Calibration and Implications for Medical Decision Making.” <em>Medical Decision Making</em> 38 (7). University of Minnesota Shcool of Public Health: 810–21. doi:<a href="https://doi.org/10.1177/0272989X18792283">10.1177/0272989X18792283</a>.</p>
+</div>
+<div id="ref-Easterly2018">
+<p>Easterly, C. W., F. Alarid-Escudero, E. A. Enns, and S. Kulasingam. 2018. “Revisiting Assumptions About Age-Based Mixing Representations in Mathematical Models of Sexually Transmitted Infections.” <em>Vaccine</em>, August. doi:<a href="https://doi.org/10.1016/j.vaccine.2018.07.058">10.1016/j.vaccine.2018.07.058</a>.</p>
 </div>
 <div id="ref-Menzies2017">
 <p>Menzies, Nicolas A., Djøra I. Soeteman, Ankur Pandya, and Jane J. Kim. 2017. “Bayesian Methods for Calibrating Health Policy Models: A Tutorial.” <em>PharmacoEconomics</em>. Springer International Publishing, 1–12. doi:<a href="https://doi.org/10.1007/s40273-017-0494-4">10.1007/s40273-017-0494-4</a>.</p>

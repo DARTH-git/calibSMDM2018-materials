@@ -21,7 +21,7 @@ Bayesian methods allow us to quantify the uncertainty in the calibrated paramete
 
 To conduct a Bayesian calibration of the three-state model, we use the incremental mixture importance sampling (IMIS) algorithm [@Teele2006]. 
 
-The IMIS algorithm has been used to calibrate health policy models [@Raftery2010a, @Menzies2017]
+The IMIS algorithm has been used to calibrate health policy models [@Raftery2010a, @Menzies2017, @Easterly2018]
 
 # Setup
 
