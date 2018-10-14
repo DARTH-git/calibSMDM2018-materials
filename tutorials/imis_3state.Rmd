@@ -336,6 +336,6 @@ Then, the calibration would proceed as before.
 
 # Return to Main Page
 
-<a href="https://caleb-easterly.github.io/calibSMDM2018-materials/">Back to main page</a>
+<a href="https://darth-git.github.io/calibSMDM2018-materials/">Back to main page</a>
 
 # References

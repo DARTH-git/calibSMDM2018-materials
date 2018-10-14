@@ -3,5 +3,5 @@
 
 ### Tutorials
 
-1. [Random Search and Nelder Mead Calibration](https://caleb-easterly.github.io/calibSMDM2018-materials/tutorials/random_search_nelder_mead_3state.html)
-3. [Bayesian calibration](https://caleb-easterly.github.io/calibSMDM2018-materials/tutorials/imis_3state.html)
+1. [Random Search and Nelder Mead Calibration](tutorials/random_search_nelder_mead_3state.html)
+3. [Bayesian calibration](tutorials/imis_3state.html)
