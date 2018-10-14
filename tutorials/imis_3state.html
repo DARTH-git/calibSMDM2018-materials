@@ -320,7 +320,7 @@ psych<span class="op">::</span><span class="kw">pairs.panels</span>(<span class=
 <p>Note that we could define a different prior on the parameters instead of uniform, like</p>
 <pre><code>m.param.samp[, i] &lt;- qbeta(m.lhs.unit[,i],
                            shape1 = 1,
-                           shape2 = 1))</code></pre>
+                           shape2 = 1)</code></pre>
 </div>
 <div id="prior-density" class="section level2">
 <h2><span class="header-section-number">2.2</span> Prior density</h2>
@@ -415,7 +415,7 @@ fit.imis &lt;-<span class="st"> </span><span class="kw">IMIS</span>(<span class=
                  <span class="dt">B.re =</span> n.resamp, <span class="co"># the desired posterior sample size</span>
                  <span class="dt">number_k =</span> <span class="dv">10</span>, <span class="co"># the maximum number of iterations in IMIS.</span>
                  <span class="dt">D =</span> <span class="dv">0</span>)</code></pre></div>
-<pre><code>## [1] &quot;10000 likelihoods are evaluated in 0.05 minutes&quot;
+<pre><code>## [1] &quot;10000 likelihoods are evaluated in 0.04 minutes&quot;
 ## [1] &quot;Stage   MargLike   UniquePoint   MaxWeight   ESS&quot;
 ## [1]   1.000 151.197 238.293   0.012 153.201
 ## [1]   2.000 151.188 356.631   0.012 215.799
@@ -485,7 +485,7 @@ plotrix<span class="op">::</span><span class="kw">plotCI</span>(<span class="dt"
 </div>
 <div id="additional-targets" class="section level1">
 <h1><span class="header-section-number">3</span> Additional Targets</h1>
-<p>As before, we can use more than one target in the calibration. Insteady of definining a likelihood vector, we would want to define a likelihood <em>matrix</em>. Then, we can sum the <span class="math inline">\(i\)</span>th of the matrix to get a total likelihood for the the <span class="math inline">\(i\)</span>th parameter set.</p>
+<p>As before, we can use more than one target in the calibration. Insteady of definining a likelihood vector, we would want to define a likelihood <em>matrix</em>. Then, we can sum the <span class="math inline">\(i\)</span>th row of the matrix to get a total likelihood for the the <span class="math inline">\(i\)</span>th parameter set.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">n.target &lt;-<span class="st"> </span><span class="dv">2</span>  <span class="co"># or any number of targets that you have</span>
 
 <span class="co"># define log-likelihood function</span>

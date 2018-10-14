@@ -96,7 +96,7 @@ Note that we could define a different prior on the parameters instead of uniform
 ```
 m.param.samp[, i] <- qbeta(m.lhs.unit[,i],
                            shape1 = 1,
-                           shape2 = 1))
+                           shape2 = 1)
 ```
 
 
@@ -278,7 +278,7 @@ lines(x = CRS.targets$Surv$Time,
 
 # Additional Targets
 
-As before, we can use more than one target in the calibration. Insteady of definining a likelihood vector, we would want to define a likelihood *matrix*. Then, we can sum the $i$th of the matrix to get a total likelihood for the the $i$th parameter set.
+As before, we can use more than one target in the calibration. Insteady of definining a likelihood vector, we would want to define a likelihood *matrix*. Then, we can sum the $i$th row of the matrix to get a total likelihood for the the $i$th parameter set.
 
 
 ```{r}
